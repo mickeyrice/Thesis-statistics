@@ -1,0 +1,790 @@
+---
+title: "Thesis Results - PMA"
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    toc: yes
+    df_print: paged
+---
+
+# Load libraries
+```{r}
+# install.packages("ppcor")
+# install.packages("apaTables")
+
+library(ppcor)
+library(psych)
+library(tidyverse)
+library(apaTables)
+```
+
+
+# Read in data
+```{r}
+PM <- read_csv("PM_Data_removed.csv")
+
+```
+
+# Describe data
+```{r}
+PM_Describe <- describe(PM)
+PM_Describe
+#apa.cor.table(PM, "PM_Describe.doc", show.conf.interval = TRUE)
+```
+
+# Hypothesis 1
+
+
+```{r}
+PM_full <- select(PM, Accuracy, RT, STAIS, STAIT, BAI, N300, PP)
+
+cor(PM_full)
+
+apa.cor.table(PM_full, "PM_full.doc", show.conf.interval = TRUE)
+
+cor.test( formula = ~ N300 + PP,
+          data = PM_full)
+
+```
+
+
+
+
+## Make a scatterplot: BAI & Accuracy
+```{r}
+ggplot(PM, aes(x = BAI, y = Accuracy)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+## Make a scatterplot: BAI & RT
+```{r}
+ggplot(PM, aes(x = BAI, y = RT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+## Make a scatterplot: STAI-S & Accuracy
+```{r}
+ggplot(PM, aes(x = STAIS, y = Accuracy)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+## Make a scatterplot: STAI-S & RT
+```{r}
+ggplot(PM, aes(x = STAIS, y = RT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: STAI-T & Accuracy
+```{r}
+ggplot(PM, aes(x = STAIT, y = Accuracy)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: STAI-T & RT
+```{r}
+ggplot(PM, aes(x = STAIT, y = RT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+## select variables of interest
+```{r}
+PM_acc <- select(PM, Accuracy, STAIS, STAIT, BAI)
+PM_RT <- select(PM, RT, STAIS, STAIT, BAI)
+```
+
+
+## Get correlation of variables
+### Via cor() function
+```{r}
+cor(PM_acc)
+cor(PM_RT)
+
+cor.test( formula = ~ Accuracy + STAIS,
+          data = PM_acc)
+cor.test( formula = ~ Accuracy + STAIT,
+          data = PM_acc)
+cor.test( formula = ~ Accuracy + BAI,
+          data = PM_acc)
+cor.test( formula = ~ RT + STAIS,
+          data = PM_RT)
+cor.test( formula = ~ RT + STAIT,
+          data = PM_RT)
+cor.test( formula = ~ RT + BAI,
+          data = PM_RT)
+
+
+```
+
+### Via apa.cor.table()
+```{r}
+apa.cor.table(PM_acc, "PM_acc.doc", show.conf.interval = TRUE)
+apa.cor.table(PM_RT, "PM_RT.doc", show.conf.interval = TRUE)
+```
+
+## FDR correction
+```{r}
+# Vector of unadjusted p values 
+
+p1 <- c(0.1252, 0.3723, 0.9245, 0.2691, 0.1776, 0.3924)
+
+# Key:  Accuracy + STAIS, Accuracy + STAIT, Accuracy + BAI, RT + STAIS, RT + STAIT, RT + BAI
+
+# FDR correction
+
+FDR_Hyp1 <- p.adjust(p1, method = "fdr", n = length(p1))
+
+FDR_Hyp1
+```
+
+
+# Hypothesis 2
+
+## Make a scatterplot: N300 & BAI
+```{r}
+ggplot(PM, aes(x = N300, y = BAI)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: N300 & STAI-S
+```{r}
+ggplot(PM, aes(x = N300, y = STAIS)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: N300 & STAI-T
+```{r}
+ggplot(PM, aes(x = N300, y = STAIT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: PP & BAI
+```{r}
+ggplot(PM, aes(x = PP, y = BAI)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Make a scatterplot: PP & STAI-S
+```{r}
+ggplot(PM, aes(x = PP, y = STAIS)) +
+  geom_point() +
+    geom_smooth(method = "lm", color = "dark green") +
+  labs(title="Prospective Positivity and State Anxiety",
+       x="Prospective Positivity Amplitude (mV)", y = "STAI-S Score")+
+  theme_classic()  +
+  theme(text = element_text(size = 20))                    
+```
+
+## Make a scatterplot: PP & STAI-T
+```{r}
+ggplot(PM, aes(x = PP, y = STAIT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## select variables of interest
+```{r}
+PM_N300 <- select(PM, N300, STAIS, STAIT, BAI)
+PM_PP <- select(PM, PP, STAIS, STAIT, BAI)
+```
+
+
+## Get correlation of variables
+### Via cor() function
+```{r}
+cor(PM_N300)
+cor(PM_PP)
+
+cor.test( formula = ~ N300 + STAIS,
+          data = PM_N300)
+cor.test( formula = ~ N300 + STAIT,
+          data = PM_N300)
+cor.test( formula = ~ N300 + BAI,
+          data = PM_N300)
+
+cor.test( formula = ~ PP + STAIS,
+          data = PM_PP)
+cor.test( formula = ~ PP + STAIT,
+          data = PM_PP)
+cor.test( formula = ~ PP + BAI,
+          data = PM_PP)
+```
+
+### Via apa.cor.table()
+```{r}
+apa.cor.table(PM_N300, "PM_N300_anxiety.doc", show.conf.interval = TRUE)
+apa.cor.table(PM_PP, "PM_PP_anxiety.doc", show.conf.interval = TRUE)
+```
+
+## FDR correction
+```{r}
+# Vector of unadjusted p values 
+
+p2 <- c(0.6255, 0.7373, 0.4192, 0.0207, 0.141, 0.1307)
+
+# Key:  N300 + STAIS, N300 + STAIT, N300 + BAI, PP + STAIS, PP + STAIT, PP + BAI
+
+# FDR correction
+
+FDR_Hyp2 <- p.adjust(p2, method = "fdr", n = length(p2))
+
+FDR_Hyp2
+```
+
+# Hypothesis 3
+
+## Make a scatterplot: N300 & Accuracy
+```{r}
+ggplot(PM, aes(x = N300, y = Accuracy)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+## Make a scatterplot: N300 & RT
+```{r}
+ggplot(PM, aes(x = N300, y = RT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+## Make a scatterplot: PP & Accuracy
+```{r}
+ggplot(PM, aes(x = PP, y = Accuracy)) +
+  geom_point() +
+    geom_smooth(method = "lm", color = "dark green") +
+ labs(title="Prospective Positivity and Accuracy",
+       x="Prospective Positivity Amplitude (mV)", y = "Accuracy")+
+  theme_classic() +
+ theme(text = element_text(size = 20)) 
+```
+
+## Make a scatterplot: PP & RT
+```{r}
+ggplot(PM, aes(x = PP, y = RT)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+## select variables of interest
+```{r}
+PM_N300_acc_RT <- select(PM, N300, Accuracy, RT)
+PM_PP_acc_RT <- select(PM, PP, Accuracy, RT)
+```
+
+## Get correlation of variables
+### Via cor() function
+```{r}
+cor(PM_N300_acc_RT)
+cor(PM_PP_acc_RT)
+
+cor.test( formula = ~ N300 + Accuracy,
+          data = PM_N300_acc_RT)
+cor.test( formula = ~ N300 + RT,
+          data = PM_N300_acc_RT)
+
+cor.test( formula = ~ PP + Accuracy,
+          data = PM_PP_acc_RT)
+cor.test( formula = ~ PP + RT,
+          data = PM_PP_acc_RT)
+```
+
+### Via apa.cor.table()
+```{r}
+apa.cor.table(PM_N300_acc_RT, "PM_N300_acc.doc", show.conf.interval = TRUE)
+apa.cor.table(PM_PP_acc_RT, "PM_PP_RT.doc", show.conf.interval = TRUE)
+```
+
+## FDR correction
+```{r}
+# Vector of unadjusted p values 
+
+p3 <- c(0.07467, 0.2091, 0.03479, 0.9157)
+
+# Key: N300 + Accuracy, N300 + RT, PP + Accuracy, PP + RT
+
+# FDR correction
+
+FDR_Hyp3 <- p.adjust(p3, method = "fdr", n = length(p3))
+
+FDR_Hyp3
+```
+
+# Mediation
+
+## Load libraries
+```{r}
+#install.packages("lavaan", dependencies = TRUE)
+#install.packages("lavaanPlot")
+library(lavaan)
+library(lavaanPlot)
+```
+
+## Consider a classical mediation setup with three variables: Y is the dependent variable, X is the predictor, and M is a mediator. Fit a path analysis model that includes the direct effect of X on Y and the indirect effect of X on Y via M
+```{r}
+# Y = Accuracy (accuracy on prospective memory task)
+# X = STAIS (state anxiety)
+# M = PP (prospective positivity amplitude)
+
+PM_Mediation <- select(PM, Accuracy, STAIS, PP)
+
+set.seed(1234)
+mediation.model <- ' # direct effect
+             Accuracy ~ c*STAIS
+           # mediator
+             PP ~ a*STAIS
+             Accuracy ~ b*PP 
+           # indirect effect (a*b)
+             ab := a*b
+           # total effect
+             total := c + (a*b)
+         '
+fit <- sem(mediation.model, data = PM_Mediation, meanstructure = TRUE,
+           se = "boot", bootstrap = 1000)
+summary(fit, fit.measures=T, standardized=T, ci=TRUE)
+
+parameterEstimates(fit, 
+                   boot.ci.type = "bca.simple",
+                   level = .95, ci = TRUE,
+                   standardized = TRUE)
+
+# SEM plot
+labels <- list(Accuracy = "Prospective Memory Accuracy", STAIS = "State Anxiety", PP = "Prospective Positivity Amplitude")
+
+lavaanPlot(model = fit, labels = labels, node_options = list(shape = "box", 
+           fontname = "times"), edge_options = list(color = "grey"), 
+           coefs = TRUE, covs = TRUE, stars = "regress")
+
+
+
+# Estimate = raw regression coefficient (i.e., b)
+# Std. Err = error for the estimate
+# Z-value = Estimate / Std. Err
+# P(>|z|) = significance value
+# ci.lower/upper = 95% CI for the estimate
+# Std.lv = …just ignore this one
+# Std.all = standardized beta coefficient
+
+```
+
+# T Tests and Correlations on extra variables
+
+#Split up groups based on anxiety screener
+```{r}
+
+HighA <- subset(PM, ID == 'PMA01'| ID == 'PMA02' | ID == 'PMA03'| ID == 'PMA06' | ID == 'PMA08' | ID == 'PMA11'| ID == 'PMA15' | ID == 'PMA16' | ID == 'PMA17' | ID == 'PMA18' | ID == 'PMA20'| ID == 'PMA22' | ID == 'PMA24' | ID == 'PMA25' | ID == 'PMA27' | ID == 'PMA28' | ID == 'PMA37' | ID == 'PMA42' | ID == 'PMA43' | ID == 'PMA44' | ID == 'PMA45'| ID == 'PMA47' | ID == 'PMA49'| ID == 'PMA52' | ID == 'PMA58' | ID == 'PMA61'| ID == 'PMA65' | ID == 'PMA66' | ID == 'PMA67' | ID == 'PMA68' | ID == 'PMA75')
+
+LowA <- subset(PM, ID == 'PMA04'| ID == 'PMA07' | ID == 'PMA10'| ID == 'PMA12' | ID == 'PMA13' | ID == 'PMA32'| ID == 'PMA35' | ID == 'PMA36' | ID == 'PMA38' | ID == 'PMA41' | ID == 'PMA46' | ID == 'PMA48' | ID == 'PMA50' | ID == 'PMA51' | ID == 'PMA53' | ID == 'PMA54' | ID == 'PMA55' | ID == 'PMA56' | ID == 'PMA57' | ID == 'PMA59' | ID == 'PMA60' | ID == 'PMA62' | ID == 'PMA69' | ID == 'PMA70' | ID == 'PMA72' | ID == 'PMA73' | ID == 'PMA74' | ID == 'PMA76' | ID == 'PMA77' | ID == 'PMA78')
+
+```
+
+
+## Sleepiness
+```{r}
+library(lsr)
+
+t_test_result_sleepiness = t.test(HighA$Sleepiness, LowA$Sleepiness, var.equal = T, paired=FALSE)
+
+t_test_result_sleepiness
+
+cohensD(HighA$Sleepiness, LowA$Sleepiness)
+
+cor.test( formula = ~ Sleepiness + BAI,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + STAIS,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + STAIT,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + RT,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + N300,
+          data = PM)
+
+cor.test( formula = ~ Sleepiness + PP,
+          data = PM)
+
+```
+
+## Hours slept
+```{r}
+t_test_result_SleepHours = t.test(HighA$SleepHours, LowA$SleepHours, var.equal = T, paired=FALSE)
+
+t_test_result_SleepHours
+
+cohensD(HighA$SleepHours, LowA$SleepHours)
+
+cor.test( formula = ~ SleepHours + BAI,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + STAIS,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + STAIT,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + RT,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + N300,
+          data = PM)
+
+cor.test( formula = ~ SleepHours + PP,
+          data = PM)
+
+```
+
+## ADHD
+```{r}
+t_test_result_ADHD = t.test(HighA$ADHD, LowA$ADHD, var.equal = T, paired=FALSE)
+
+t_test_result_ADHD
+
+cor.test( formula = ~ ADHD + BAI,
+          data = PM)
+
+cor.test( formula = ~ ADHD + STAIS,
+          data = PM)
+
+cor.test( formula = ~ ADHD + STAIT,
+          data = PM)
+
+cor.test( formula = ~ ADHD + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ ADHD + RT,
+          data = PM)
+
+cor.test( formula = ~ ADHD + N300,
+          data = PM)
+
+cor.test( formula = ~ ADHD + PP,
+          data = PM)
+
+```
+
+
+## Depression
+```{r}
+t_test_result_Depression = t.test(HighA$Depression, LowA$Depression, var.equal = T, paired=FALSE)
+
+t_test_result_Depression
+
+cohensD(HighA$Depression, LowA$Depression)
+
+cor.test( formula = ~ Depression + BAI,
+          data = PM)
+
+cor.test( formula = ~ Depression + STAIS,
+          data = PM)
+
+cor.test( formula = ~ Depression + STAIT,
+          data = PM)
+
+cor.test( formula = ~ Depression + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ Depression + RT,
+          data = PM)
+
+cor.test( formula = ~ Depression + N300,
+          data = PM)
+
+cor.test( formula = ~ Depression + PP,
+          data = PM)
+
+```
+
+## Positive Affect
+```{r}
+t_test_result_PositiveAff = t.test(HighA$PostiveAff, LowA$PostiveAff, var.equal = T, paired=FALSE)
+
+t_test_result_PositiveAff
+
+cohensD(HighA$PostiveAff, LowA$PostiveAff)
+
+cor.test( formula = ~ PostiveAff + BAI,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + STAIS,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + STAIT,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + RT,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + N300,
+          data = PM)
+
+cor.test( formula = ~ PostiveAff + PP,
+          data = PM)
+
+```
+
+
+## Negative Affect
+```{r}
+t_test_result_NegativeAff = t.test(HighA$NegativeAff, LowA$NegativeAff, var.equal = T, paired=FALSE)
+
+t_test_result_NegativeAff
+
+cohensD(HighA$NegativeAff, LowA$NegativeAff)
+
+cor.test( formula = ~ NegativeAff + BAI,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + STAIS,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + STAIT,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + RT,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + N300,
+          data = PM)
+
+cor.test( formula = ~ NegativeAff + PP,
+          data = PM)
+```
+
+## Motivation
+```{r}
+t_test_result_Motivation = t.test(HighA$Motivation, LowA$Motivation, var.equal = T, paired=FALSE)
+
+t_test_result_Motivation
+
+cohensD(HighA$Motivation, LowA$Motivation)
+
+cor.test( formula = ~ Motivation + BAI,
+          data = PM)
+
+cor.test( formula = ~ Motivation + STAIS,
+          data = PM)
+
+cor.test( formula = ~ Motivation + STAIT,
+          data = PM)
+
+cor.test( formula = ~ Motivation + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ Motivation + RT,
+          data = PM)
+
+cor.test( formula = ~ Motivation + N300,
+          data = PM)
+
+cor.test( formula = ~ Motivation + PP,
+          data = PM)
+
+```
+
+
+## DEX
+```{r}
+cor.test( formula = ~ DEX + BAI,
+          data = PM)
+
+cor.test( formula = ~ DEX + STAIS,
+          data = PM)
+
+cor.test( formula = ~ DEX + STAIT,
+          data = PM)
+
+cor.test( formula = ~ DEX + Depression,
+          data = PM)
+
+cor.test( formula = ~ DEX + Depression,
+          data = PM)
+
+cor.test( formula = ~ DEX + Depression,
+          data = PM)
+
+cor.test( formula = ~ DEX + Accuracy,
+          data = PM)
+
+cor.test( formula = ~ DEX + RT,
+          data = PM)
+
+cor.test( formula = ~ DEX + N300,
+          data = PM)
+
+cor.test( formula = ~ DEX + PP,
+          data = PM)
+
+
+```
+
+## Partial correlations using pcor.test() 
+
+### Create formula to get confidence intervals for pcor.test()
+```{r}
+pcor_ci.test <-
+function (x, y, z, method = c("pearson", "kendall", "spearman"), conf.level = 0.95, ...) {
+    d1 <- deparse(substitute(x))
+    d2 <- deparse(substitute(y))
+    d3 <- deparse(substitute(z))
+    data.name <- paste0(d1, " and ", d2, "; controlling: ", d3)
+    method <- match.arg(method)
+    Method <- paste0("Partial correlation (", method, ")")
+    alternative <- "true partial correlation is not equal to 0"
+
+    x <- as.vector(x)
+    y <- as.vector(y)
+    z <- as.data.frame(z)
+    xyz <- data.frame(x, y, z)
+    pcor <- ppcor::pcor(xyz, method = method)
+    estimate <- pcor$est[1, 2]
+    p.value <- pcor$p.value[1, 2]
+    parameter <- c(n = pcor$n, gp = pcor$gp)
+    statistic <- c(Stat = pcor$statistic[1, 2])
+
+    fit1 <- lm(x ~ z, data = xyz)
+    fit2 <- lm(y ~ z, data = xyz)
+    cortest <- cor.test(resid(fit1), resid(fit2), method = method, conf.level = conf.level, ...)
+    ci <- cortest$conf.int
+
+    ht <- list(
+        statistic = statistic,
+        parameter = parameter,
+        p.value = p.value,
+        estimate = c(partial.cor = estimate),
+        alternative = alternative,
+        method = Method,
+        data.name = data.name,
+        conf.int = ci
+    )
+    class(ht) <- "htest"
+    ht
+}
+```
+
+
+### Anxiety & Prospective Positivity - negative affect
+```{r}
+pcor.test(PM$STAIS, PM$PP, PM$NegativeAff, method = c("pearson"))
+pcor_ci.test(PM$STAIS, PM$PP, PM$NegativeAff,  method = c("pearson")) 
+
+pcor.test(PM$STAIT, PM$PP, PM$NegativeAff, method = c("pearson"))
+pcor_ci.test(PM$STAIT, PM$PP, PM$NegativeAff,  method = c("pearson")) 
+
+pcor.test(PM$BAI, PM$PP, PM$NegativeAff, method = c("pearson"))
+pcor_ci.test(PM$BAI, PM$PP, PM$NegativeAff,  method = c("pearson")) 
+```
+
+
+### Anxiety & Prospective Positivty - sleepiness
+```{r}
+
+pcor.test(PM$STAIS, PM$PP, PM$Sleepiness, method = c("pearson"))
+pcor_ci.test(PM$STAIS, PM$PP, PM$Sleepiness,  method = c("pearson")) 
+
+pcor.test(PM$STAIT, PM$PP, PM$Sleepiness, method = c("pearson"))
+pcor_ci.test(PM$STAIT, PM$PP, PM$Sleepiness,  method = c("pearson")) 
+
+pcor.test(PM$BAI, PM$PP, PM$Sleepiness, method = c("pearson"))
+pcor_ci.test(PM$BAI, PM$PP, PM$Sleepiness,  method = c("pearson")) 
+
+```
+
+
+
+## Anxiety & N300 - sleepiness 
+```{r}
+pcor_ci.test(PM$STAIS, PM$N300, PM$Sleepiness,  method = c("pearson")) 
+pcor.test(PM$STAIS, PM$N300, PM$Sleepiness,  method = c("pearson")) 
+
+pcor_ci.test(PM$STAIT, PM$N300, PM$Sleepiness,  method = c("pearson")) 
+pcor.test(PM$STAIT, PM$N300, PM$Sleepiness, method = c("pearson"))
+
+pcor_ci.test(PM$BAI, PM$N300, PM$Sleepiness,  method = c("pearson")) 
+pcor.test(PM$BAI, PM$N300, PM$Sleepiness, method = c("pearson"))
+
+```
+
+
+## Anxiety and accuracy - sleepiness 
+```{r}
+pcor_ci.test(PM$STAIS, PM$Accuracy, PM$Sleepiness, method = c("pearson"))
+pcor.test(PM$STAIS, PM$Accuracy, PM$Sleepiness,  method = c("pearson")) 
+
+pcor_ci.test(PM$STAIT, PM$Accuracy, PM$Sleepiness, method = c("pearson"))
+pcor.test(PM$STAIT, PM$Accuracy, PM$Sleepiness,  method = c("pearson")) 
+
+pcor_ci.test(PM$BAI, PM$Accuracy, PM$Sleepiness, method = c("pearson"))
+pcor.test(PM$BAI, PM$Accuracy, PM$Sleepiness,  method = c("pearson")) 
+
+```
+
+## N300 and accuracy - sleepiness 
+```{r}
+
+pcor_ci.test(PM$N300, PM$Accuracy, PM$Sleepiness, method = c("pearson"))
+pcor.test(PM$N300, PM$Accuracy, PM$Sleepiness,  method = c("pearson")) 
+
+```
+
+## PP and accuracy - sleepiness 
+```{r}
+pcor_ci.test(PM$PP, PM$Accuracy, PM$Sleepiness, method = c("pearson"))
+pcor.test(PM$PP, PM$Accuracy, PM$Sleepiness,  method = c("pearson")) 
+```
+
+
+# Tables
+
+### Via apa.cor.table()
+```{r}
+apa.cor.table(PM, "PM_all.doc", show.conf.interval = TRUE)
+
+ PM_explore1 <- select(PM, BAI, STAIS, STAIT, SleepHours, Sleepiness, Depression, PostiveAff, NegativeAff, Motivation, ADHD)
+
+ apa.cor.table(PM_explore1, "PM_explore1.doc", show.conf.interval = TRUE)
+
+ PM_explore2 <- select(PM, Accuracy, RT, SleepHours, Sleepiness, Depression, PostiveAff, NegativeAff, Motivation, ADHD)
+
+ apa.cor.table(PM_explore2, "PM_explore2.doc", show.conf.interval = TRUE)
+
+PM_explore3 <- select(PM, N300, PP, SleepHours, Sleepiness, Depression, PostiveAff, NegativeAff, Motivation, ADHD)
+
+ apa.cor.table(PM_explore3, "PM_explore3.doc", show.conf.interval = TRUE)
+
+ PM_explore_combined <- select(PM, Accuracy, RT, N300, PP, SleepHours, Sleepiness, Depression, PostiveAff, NegativeAff, Motivation, ADHD)
+
+ apa.cor.table(PM_explore_combined, "PM_explore_combined.doc", show.conf.interval = TRUE)
+
+# apa.cor.table()
+```
+
+
+
+
+
+
+
