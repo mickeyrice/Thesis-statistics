@@ -8,4 +8,4 @@ I used correlations to test a relationship between prospective memory accuracy a
 
 Additionally, I tested how other variables (sleep, ADHD, depression, affect, motivation, executive function) may play a role in the overall anxiety-prospective memory relationship. 
 
-I created graphs and tables to include in my theses. 
+I created graphs and tables to include in my thesis. 
